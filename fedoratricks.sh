@@ -3,33 +3,85 @@
 set -Eeuo pipefail
 trap cleanup SIGINT SIGTERM ERR
 
+# todo - this should be absolute path, depending on where we install the libs, and at the same time it should function in development as structured in this repository.
+COMMAND_DIR=commands
+COMMANDS=("template" "logs")
+args=()
+
+for cmd in "${COMMANDS[@]}" ; do
+  source "${COMMAND_DIR}/${cmd}"
+done
+
 help() {
   cat <<EOF
-Usage: fedoratricks [-h]
+Usage: fedoratricks <command> [options]
 
 Global options:
--h   Print the help text and exit.
+-h|--help   Print the help text and exit.
+            Use -h with each command to learn what options they have.
 
-Commands:
-  todo - iterate over commands and print their help text
-
-Use -h with each command to learn what options they have.
+Available commands:
 EOF
-  exit 0
+
+  for cmd in "${COMMANDS[@]}" ; do
+    echo "$cmd"
+  done
+
+  if [[ ${#args[@]} != 0 ]]; then
+    echo ""
+
+    if [[ ! ${COMMANDS[*]} =~ ${args[0]} ]]; then
+      echo "Unknown command: ${args[0]}"
+      exit 1
+    fi
+
+    ${args[0]}Help
+  fi
 }
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+      help
+      exit 0
+      ;;
+    -v|--value)
+      exampleValue="$2"
+      shift 2
+      ;;
+    -b|--boolean)
+      exampleBool=true
+      shift
+      ;;
+    *)
+      args+=("$1")
+      shift
+      ;;
+  esac
+done
+
+if [[ ${#args[@]} == 0 ]]; then
+  help
+  exit 1
+fi
+
+if [[ ! ${COMMANDS[*]} =~ ${args[0]} ]]; then
+  echo Unknown command.
+  exit 1
+fi
+
+${args[0]}Execute "${args[@]:1}"
 
 cleanup() {
   trap - SIGINT SIGTERM ERR EXIT
-  # todo - clean up based on what command was executed
-  echo Squeeeeky clean.
+  if [[ ${#args[@]} != 0 ]]; then
+    echo ""
+
+    if [[ ! ${COMMANDS[*]} =~ ${args[0]} ]]; then
+      ${args[0]}Cleanup
+    fi
+  fi
+
 }
-
-# todo - load commands from elsewhere, aka modules or plugins
-# todo - create a specification for what those should look like
-
-# todo - parse arguments and execute a command (or print help)
-# todo - temporary help output since there is nothing better to do
-help
-
 
 exit 0

@@ -1,0 +1,72 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+cleanup() {
+  logsCleanup
+}
+
+
+logsHelp() {
+  cat <<EOF
+Command Usage: fedoratricks logs [options]
+
+Options:
+-h|--help     Print the help text and exit.
+-a|--all      Save dmesg as well as journal current and last boot.
+-0|--current  Save the current boot logs (default)
+-1|--lastboot Save the previous boot logs.
+-d|--dmesg    Save the dmesg output.
+-f|--file     File path where to save the logs. Default ~/Downloads/
+EOF
+}
+
+# Always define option defaults:
+FILENAME=$(date '+%Y-%m-%d_%H-%M-%S');
+file="~/Downloads/${FILENAME}"
+current=true
+lastboot=false
+dmesg=false
+
+logsExecute() {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -f|--file)
+        file="$2"
+        shift 2
+        ;;
+      -a|--all)
+        current=true
+        lastboot=true
+        dmesg=true
+        shift
+        ;;
+      -0|--current)
+        current=true
+        shift
+        ;;
+      -1|--lastboot)
+        lastboot=true
+        shift
+        ;;
+      -d|--dmesg)
+        dmesg=true
+        shift
+        ;;
+      *)
+        echo "Unknown option $1"
+        exit 1
+        ;;
+    esac
+  done
+
+  # DO STUFF
+  # todo - make sure path exists, create folders if necessary
+  echo "Saved support logs to ${file}"
+}
+
+logsCleanup() {
+  # Triggered automatically in case of an unexpected error.
+  echo "Cleaned up after <logs>" # todo - possibly do nothing
+  exit 2
+}
+
