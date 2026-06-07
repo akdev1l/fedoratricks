@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fedoratricks"
+version = "0.1.0"
+description = "Command line utility for Fedora tips and tricks"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+fedoratricks = "fedoratricks.cli:main"
+
+[tool.setuptools]
+package-dir = {"fedoratricks" = "src"}
