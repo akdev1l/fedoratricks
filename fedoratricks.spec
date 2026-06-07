@@ -24,10 +24,12 @@ A is a collection of scripts to make the life of a beginner Fedora Linux user a 
 %setup -C
 
 %install
+install -D 0644 commands/* -t "%{_datarootdir}/%{name}/"
 install -m 0755 %{name}.sh "%{buildroot}%{_bindir}/%{_bindir}/%{name}"
 
 %files
 %{_bindir}/%{name}
+%{_datarootdir}/%{name}/*
 
 %changelog
 * Sat Jun 6 2026 Rhea Gustavsson <contact@rhea.dev> 0.1-1

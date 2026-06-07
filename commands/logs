@@ -21,17 +21,21 @@ EOF
 }
 
 # Always define option defaults:
-FILENAME=$(date '+%Y-%m-%d_%H-%M-%S');
-file="~/Downloads/${FILENAME}"
 current=true
 lastboot=false
 dmesg=false
+datetime=$(date '+%Y-%m-%d_%H-%M-%S');
+if [[ -d ${HOME}/Downloads ]]; then
+  path="${HOME}/Downloads"
+else
+  path="${HOME}"
+fi
 
 logsExecute() {
   while [[ $# -gt 0 ]]; do
     case $1 in
       -f|--file)
-        file="$2"
+        path="$2"
         shift 2
         ;;
       -a|--all)
@@ -60,8 +64,16 @@ logsExecute() {
   done
 
   # DO STUFF
-  # todo - make sure path exists, create folders if necessary
-  echo "Saved support logs to ${file}"
+  if [[ ${dmesg} == true ]]; then
+    sudo dmesg -H &> ${path}/dmesg_${datetime}.log
+  fi
+  if [[ ${current} == true ]] ; then
+    journalctl -b 0 &> ${path}/current_${datetime}.log
+  fi
+  if [[ ${lastboot} == true ]] ; then
+    journalctl -b -1 &> ${path}/lastboot_${datetime}.log
+  fi
+  echo "Saved support logs to ${path}"
 }
 
 logsCleanup() {

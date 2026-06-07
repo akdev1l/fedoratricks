@@ -3,9 +3,18 @@
 set -Eeuo pipefail
 trap cleanup SIGINT SIGTERM ERR
 
-# todo - this should be absolute path, depending on where we install the libs, and at the same time it should function in development as structured in this repository.
-COMMAND_DIR=commands
 COMMANDS=("template" "logs")
+
+COMMAND_DIR="$(rpm -E %{_datarootdir})/fedoratricks"
+if [[ $(readlink -f -- "$0") == *"${HOME}"* ]]; then
+  COMMAND_DIR="$(dirname -- "$(readlink -f -- "$0")")/commands"
+  echo "Using user directory, this is for development purposes only:"
+  echo "${COMMAND_DIR}"
+fi
+if [[ ! -d ${COMMAND_DIR} ]]; then
+  echo "Plugins not found in: ${COMMAND_DIR}"
+fi
+
 args=()
 
 for cmd in "${COMMANDS[@]}" ; do
