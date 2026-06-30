@@ -13,14 +13,14 @@ def main() -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    program_name = Path(sys.argv[0]).name
     plugin_list = [
-      plugins.template,
+      # plugins.template,
       plugins.nvidia,
       plugins.rpmfusion,
       plugins.codecs,
     ]
 
+    program_name = Path(sys.argv[0]).name
     command_parser = argparse.ArgumentParser(
         prog=program_name,
         description="Fedora tips and tricks CLI",

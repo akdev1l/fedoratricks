@@ -6,6 +6,12 @@ logger = getLogger(__name__)
 
 
 class NvidiaPlugin(PluginBase):
+  """
+  Automates the process documented here: https://rpmfusion.org/Howto/NVIDIA
+
+  sudo dnf install akmod-nvidia
+  sudo dnf install xorg-x11-drv-nvidia-cuda
+  """
 
   def __init__(self):
     self.subcommand_spec = SubcommandSpec(
